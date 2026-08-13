@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Controle de Faltas e Abonadas</title>
+  <style>:root{--bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--primary:#2563eb;--primary2:#1d4ed8;--green:#15803d;--red:#dc2626;--amber:#b45309;--line:#e5e7eb;--sidebar:#0f172a;--sidebar2:#172554;--shadow:0 10px 30px rgba(15,23,42,.08);--radius:16px}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)} button,input,select,textarea{font:inherit}.hidden{display:none!important}
+    .login-page{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 45%,#eef2ff 100%)}
+    .login-card{width:min(480px,100%);background:#fff;padding:34px;border-radius:22px;box-shadow:0 24px 60px rgba(15,23,42,.14);border:1px solid #e8eef8}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}.brand-icon{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#4f46e5);display:grid;place-items:center;color:#fff;font-size:24px;font-weight:700}.brand h1{font-size:20px;margin:0}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;background:#f1f5f9;padding:4px;border-radius:12px;margin-bottom:18px}.tab{border:0;background:transparent;padding:9px;border-radius:9px;font-weight:700;color:#64748b;cursor:pointer}.tab.active{background:#fff;color:#0f172a;box-shadow:0 2px 8px rgba(15,23,42,.06)}
+    label{display:block;font-size:13px;font-weight:700;margin:14px 0 6px}input,select,textarea{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:11px 12px;background:#fff;outline:none;transition:.2s}input:focus,select:focus,textarea:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(37,99,235,.10)}textarea{min-height:82px;resize:vertical}
+    .btn{border:0;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:700;transition:transform .1s,background .2s;display:inline-flex;align-items:center;gap:8px;justify-content:center}.btn:active{transform:translateY(1px)}.btn:disabled{opacity:.55;cursor:not-allowed}.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary2)}.btn-secondary{background:#eef2ff;color:#3730a3}.btn-light{background:#fff;border:1px solid var(--line);color:var(--text)}.btn-danger{background:#fee2e2;color:#991b1b}.login-card .wide{width:100%;margin-top:20px}
+    .help{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:16px;font-size:12px;color:#475569;line-height:1.55}.message{font-size:13px;margin-top:12px;padding:10px 12px;border-radius:10px}.message.error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}.message.ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+    .activation-card{width:min(460px,100%);background:#fff;padding:30px;border-radius:22px;box-shadow:0 24px 60px rgba(15,23,42,.14)}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}aside{background:linear-gradient(180deg,var(--sidebar),var(--sidebar2));color:#fff;padding:22px 16px;position:sticky;top:0;height:100vh}.sidebar-title{font-weight:800;font-size:16px;line-height:1.2;margin-bottom:24px;padding:0 8px}.nav{display:flex;flex-direction:column;gap:7px}.nav button{background:transparent;border:0;color:#cbd5e1;text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer;font-weight:600}.nav button:hover,.nav button.active{background:rgba(255,255,255,.10);color:#fff}.sidebar-footer{position:absolute;bottom:18px;left:16px;right:16px;border-top:1px solid rgba(255,255,255,.12);padding-top:14px}.user-name{font-size:13px;font-weight:700}.user-role{font-size:12px;color:#94a3b8;margin-top:3px}.logout{margin-top:10px;width:100%;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12)}
+    main{padding:28px;min-width:0}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}.topbar h2{margin:0;font-size:26px}.topbar p{margin:5px 0 0;color:var(--muted);font-size:14px}.actions{display:flex;gap:10px;flex-wrap:wrap}.connection{font-size:11px;font-weight:800;padding:6px 9px;border-radius:999px}.connection.online{background:#dcfce7;color:#166534}.connection.connecting{background:#fef3c7;color:#92400e}.connection.offline{background:#fee2e2;color:#991b1b}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:22px}.card{background:var(--card);border:1px solid #e9edf3;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}.metric-label{font-size:13px;color:var(--muted);font-weight:700}.metric-value{font-size:30px;font-weight:800;margin-top:8px}.metric-sub{font-size:12px;color:var(--muted);margin-top:5px}
+    .panel{background:#fff;border:1px solid #e9edf3;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:22px}.panel-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head h3{margin:0;font-size:16px}.filters{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:10px;padding:16px 20px;border-bottom:1px solid var(--line);background:#fbfdff}.filter-actions{display:flex;gap:8px;flex-wrap:wrap}.report-filter-summary{font-size:13px;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;margin:12px 0}.reason-help{margin-top:6px;font-size:12px;color:#64748b}.filters label{margin:0 0 4px;font-size:11px;color:#64748b}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:1120px}th,td{padding:13px 14px;border-bottom:1px solid #eef2f7;text-align:left;font-size:13px;vertical-align:middle}th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#64748b;background:#fafafa;position:sticky;top:0}tbody tr:hover{background:#f8fbff}
+    .badge{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800}.badge.green{background:#dcfce7;color:#166534}.badge.red{background:#fee2e2;color:#991b1b}.badge.amber{background:#fef3c7;color:#92400e}.badge.blue{background:#dbeafe;color:#1e40af}.small-btn{border:1px solid #dbe2ea;background:#fff;border-radius:8px;padding:7px 9px;cursor:pointer;font-size:12px}.small-btn:hover{background:#f8fafc}
+    .pending-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:18px}.pending-card{border:1px solid #fecaca;background:#fffafa;border-radius:14px;padding:15px}.pending-card h4{margin:0 0 6px;font-size:14px}.pending-card p{margin:4px 0;color:#6b7280;font-size:13px}.empty{padding:36px;text-align:center;color:#64748b}
+    .modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:grid;place-items:center;padding:20px;z-index:20}.modal-card{width:min(820px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;box-shadow:0 30px 70px rgba(0,0,0,.25)}.modal-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.modal-head h3{margin:0}.modal-body{padding:20px 22px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.span-2{grid-column:span 2}.modal-foot{padding:16px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}.close-x{border:0;background:#f1f5f9;border-radius:8px;width:34px;height:34px;cursor:pointer}.section{display:none}.section.active{display:block}.section-title{font-size:20px;margin:0 0 16px}.notice{padding:12px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;color:#1e3a8a;font-size:13px;margin-bottom:16px}.prof-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.prof-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:14px}.prof-card strong{display:block;margin-bottom:4px}.prof-card span{font-size:12px;color:#6b7280}.mobile-menu{display:none}.toast{position:fixed;right:22px;bottom:22px;z-index:60;max-width:360px;background:#0f172a;color:#fff;padding:12px 15px;border-radius:12px;box-shadow:0 15px 40px rgba(15,23,42,.25);font-size:13px}.muted{color:#64748b}.loading{opacity:.55;pointer-events:none}
+    @media(max-width:1050px){.cards{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:repeat(3,1fr)}.prof-list{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:760px){.app{grid-template-columns:1fr}aside{display:none;position:fixed;z-index:30;width:250px}aside.open{display:block}.mobile-menu{display:inline-flex}main{padding:18px}.cards{grid-template-columns:1fr}.filters{grid-template-columns:1fr}.pending-grid,.prof-list{grid-template-columns:1fr}.topbar{align-items:flex-start}.form-grid{grid-template-columns:1fr}.span-2{grid-column:span 1}}</style>
+</head>
+<body>
+<section id="loginPage" class="login-page">
+  <div class="login-card">
+    <div class="brand"><div class="brand-icon">E</div><div><h1>Controle de Faltas</h1><p>Escola • Professores e substituições</p></div></div>
+    <div class="tabs"><button id="tabLogin" class="tab active">Entrar</button><button id="tabSignup" class="tab">Primeiro acesso</button></div>
+    <div id="loginForm">
+      <label>E-mail</label><input id="loginEmail" type="email" placeholder="seuemail@escola.com.br" autocomplete="username">
+      <label>Senha</label><input id="loginPass" type="password" placeholder="Digite sua senha" autocomplete="current-password">
+      <button id="loginBtn" class="btn btn-primary wide">Entrar</button>
+      <div id="loginMessage"></div>
+    </div>
+    <div id="signupForm" class="hidden">
+      <label>Seu e-mail</label><input id="signupEmail" type="email" placeholder="seuemail@escola.com.br" autocomplete="email">
+      <label>Crie uma senha</label><input id="signupPass" type="password" minlength="8" placeholder="Mínimo de 8 caracteres" autocomplete="new-password">
+      <label>Código de ativação</label><input id="signupCode" placeholder="Código fornecido para seu cargo" autocomplete="off">
+      <button id="signupBtn" class="btn btn-primary wide">Criar meu acesso</button>
+      <div id="signupMessage"></div>
+      <div class="help">O código identifica o perfil como <strong>Diretora</strong>, <strong>Vice</strong> ou <strong>Secretaria</strong>. Ele só pode ser usado uma vez.</div>
+    </div>
+  </div>
+</section>
+
+<section id="activationPage" class="login-page hidden">
+  <div class="activation-card">
+    <div class="brand"><div class="brand-icon">✓</div><div><h1>Ativar acesso</h1><p>Sua conta existe, mas ainda não possui um perfil da escola.</p></div></div>
+    <label>Código de ativação</label><input id="activationCode" placeholder="Digite o código do seu cargo">
+    <button id="activationBtn" class="btn btn-primary wide">Ativar acesso</button>
+    <button id="activationLogout" class="btn btn-light wide">Sair</button>
+    <div id="activationMessage"></div>
+  </div>
+</section>
+
+<div id="app" class="app hidden">
+  <aside id="sidebar">
+    <div class="sidebar-title">🏫 Controle Escolar<br><span style="font-size:12px;color:#94a3b8;font-weight:500">Faltas e Abonadas</span></div>
+    <div class="nav">
+      <button class="active" data-section="dashboard">🏠 Painel</button>
+      <button id="navNewAbsence">➕ Registrar falta</button>
+      <button data-section="records">📋 Faltas / Abonadas</button>
+      <button data-section="substitutions">🔄 Substituições</button>
+      <button data-section="teachers">👩‍🏫 Professores</button>
+    </div>
+    <div class="sidebar-footer"><div class="user-name" id="sideUserName"></div><div class="user-role" id="sideUserRole"></div><button id="changePasswordBtn" class="btn logout">🔑 Alterar senha</button><button id="logoutBtn" class="btn logout">Sair</button></div>
+  </aside>
+  <main>
+    <div class="topbar">
+      <div style="display:flex;gap:12px;align-items:flex-start"><button id="menuBtn" class="btn btn-light mobile-menu">☰</button><div><h2 id="pageTitle">Painel</h2><p id="pageSubtitle">Visão geral das faltas e substituições.</p></div></div>
+      <div class="actions"><span id="connection" class="connection connecting">Conectando…</span><button id="newAbsenceBtn" class="btn btn-primary">＋ Registrar falta</button></div>
+    </div>
+
+    <section id="dashboard" class="section active">
+      <div class="cards">
+        <div class="card"><div class="metric-label">Faltas hoje</div><div id="metricToday" class="metric-value">0</div><div class="metric-sub">registros no dia atual</div></div>
+        <div class="card"><div class="metric-label">Aulas afetadas</div><div id="metricClasses" class="metric-value">0</div><div class="metric-sub">no total cadastrado</div></div>
+        <div class="card"><div class="metric-label">Com substituto</div><div id="metricCovered" class="metric-value">0</div><div class="metric-sub">registros já cobertos</div></div>
+        <div class="card"><div class="metric-label">Pendentes</div><div id="metricPending" class="metric-value">0</div><div class="metric-sub">aguardando eventual</div></div>
+      </div>
+      <div class="panel"><div class="panel-head"><h3>🔴 Substituições pendentes</h3><button id="seeAllPending" class="small-btn">Ver todas</button></div><div id="pendingDashboard" class="pending-grid"></div></div>
+      <div class="panel"><div class="panel-head"><h3>Últimos registros</h3></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Professor</th><th>Classe</th><th>Aulas</th><th>Período</th><th>Sigla</th><th>Motivo</th><th>Eventual</th><th>Status</th><th>Alterado por</th></tr></thead><tbody id="recentBody"></tbody></table></div></div>
+    </section>
+
+    <section id="records" class="section">
+      <div class="panel">
+        <div class="panel-head"><div><h3>Consulta de registros</h3><div class="muted" style="font-size:12px;margin-top:4px">Excel e impressão usam exatamente os filtros abaixo.</div></div><div class="filter-actions"><button id="clearFiltersBtn" class="small-btn">Limpar filtros</button><button id="exportFilteredBtn" class="small-btn">⬇ Exportar Excel</button><button id="printFilteredBtn" class="small-btn">🖨 Imprimir relatório</button></div></div>
+        <div class="filters">
+          <div><label>Professor</label><input id="fTeacher" placeholder="Nome..."></div>
+          <div><label>Mês</label><select id="fMonth"><option value="">Todos os meses</option><option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option><option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option><option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+          <div><label>Ano</label><select id="fYear"><option value="">Todos os anos</option></select></div>
+          <div><label>Data inicial</label><input id="fDateStart" type="date"></div>
+          <div><label>Data final</label><input id="fDateEnd" type="date"></div>
+          <div><label>Classe</label><input id="fClass" placeholder="Ex.: 8º A"></div>
+          <div><label>Motivo / Sigla</label><select id="fReason"><option value="">Todos os motivos</option></select></div>
+          <div><label>Status</label><select id="fStatus"><option value="">Todos</option><option value="covered">Coberta</option><option value="pending">Pendente</option></select></div>
+          <div><label>Ordem</label><select id="fOrder"><option value="desc">Data: mais recente primeiro</option><option value="asc">Data: mais antiga primeiro</option></select></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Data</th><th>Professor</th><th>Classe</th><th>Aulas</th><th>Período</th><th>Sigla</th><th>Motivo</th><th>Eventual</th><th>Status</th><th>Alterado por</th><th>Ações</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="substitutions" class="section"><div class="notice">Aqui aparecem somente registros que ainda estão sem professor eventual. Assim que alguém definir o substituto, a alteração aparece automaticamente para os outros usuários conectados.</div><div id="pendingAll" class="pending-grid"></div></section>
+
+    <section id="teachers" class="section"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px"><h3 class="section-title" style="margin:0">Professores cadastrados</h3><button id="newTeacherBtn" class="btn btn-primary">＋ Cadastrar professor</button></div><div id="teacherList" class="prof-list"></div></section>
+  </main>
+</div>
+
+<div id="absenceModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h3 id="absenceModalTitle">Registrar falta / abonada</h3><button id="closeAbsence" class="close-x">✕</button></div><div class="modal-body"><input id="editId" type="hidden"><div class="form-grid"><div><label>Data *</label><input id="aDate" type="date"></div><div><label>Professor *</label><select id="aTeacher"></select></div><div><label>Classe *</label><input id="aClass" placeholder="Ex.: 8º A"></div><div><label>Nº de aulas *</label><input id="aClasses" type="number" min="1" value="1"></div><div><label>Período *</label><select id="aPeriod"><option>Manhã</option><option>Tarde</option><option>Noite</option></select></div><div><label>Motivo / Sigla *</label><select id="aReasonCode"></select><div id="aReasonDescription" class="reason-help"></div></div><div><label>Professor eventual</label><select id="aSubstitute"><option value="">Ainda não definido</option></select></div><div><label>Observação</label><input id="aNote" placeholder="Opcional"></div></div></div><div class="modal-foot"><button id="cancelAbsence" class="btn btn-light">Cancelar</button><button id="saveAbsenceBtn" class="btn btn-primary">Salvar registro</button></div></div></div>
+
+<div id="teacherModal" class="modal hidden"><div class="modal-card" style="width:min(520px,100%)"><div class="modal-head"><h3 id="teacherModalTitle">Cadastrar professor</h3><button id="closeTeacher" class="close-x">✕</button></div><div class="modal-body"><input id="tEditId" type="hidden"><label>Nome *</label><input id="tName" placeholder="Nome completo"><label>Disciplina</label><input id="tSubject" placeholder="Ex.: Matemática"><label>Turno</label><select id="tShift"><option>Manhã</option><option>Tarde</option><option>Noite</option><option>Integral</option></select></div><div class="modal-foot"><button id="cancelTeacher" class="btn btn-light">Cancelar</button><button id="saveTeacherBtn" class="btn btn-primary">Cadastrar</button></div></div></div>
+
+<div id="passwordModal" class="modal hidden"><div class="modal-card" style="width:min(520px,100%)"><div class="modal-head"><h3>Alterar senha</h3><button id="closePassword" class="close-x">✕</button></div><div class="modal-body"><div class="notice">A alteração vale para este login em todos os computadores e celulares.</div><label>Senha atual *</label><input id="currentPassword" type="password" autocomplete="current-password"><label>Nova senha *</label><input id="newPassword" type="password" minlength="8" placeholder="Mínimo de 8 caracteres" autocomplete="new-password"><label>Confirmar nova senha *</label><input id="confirmPassword" type="password" minlength="8" autocomplete="new-password"><div id="passwordMessage"></div></div><div class="modal-foot"><button id="cancelPassword" class="btn btn-light">Cancelar</button><button id="savePasswordBtn" class="btn btn-primary">Alterar senha</button></div></div></div>
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>const SUPABASE_URL = 'https://kpfpiyqozkesphslwqwz.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_2__O4V9-LeKuMoB-SbHqmg_lDAKgC_4'
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+let currentUser = null
+let currentProfile = null
+let teachers = []
+let records = []
+let profiles = []
+let realtimeChannel = null
+
+const $ = (id) => document.getElementById(id)
+const roleLabel = (r) => ({diretora:'Diretora',vice:'Vice-direção',secretaria:'Secretaria'}[r] || r || '')
+const todayISO = () => { const d=new Date(); const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}` }
+const brDate = (s) => { if(!s)return ''; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}` }
+const esc = (s) => String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))
+const profileName = (id) => profiles.find(p=>p.id===id)?.display_name || '—'
+const recordTeacherName = (r) => r.teacher?.name || teachers.find(t=>t.id===r.teacher_id)?.name || '—'
+const recordSubName = (r) => r.substitute?.name || teachers.find(t=>t.id===r.substitute_teacher_id)?.name || ''
+const MOTIVOS = [
+  ['A','Abonada'],['LAT','Licença Acidente de Trabalho'],['AM','Atestado Médico'],['AM/2','Atestado Médico meio período'],['AT','Atrasos'],['FA','Falta Aula'],['F','Férias'],['G','Gala'],['I','Falta Injustificada'],['I/2','Falta Injustificada 1/2 período'],['J','Falta Justificada'],['J/2','Falta Justificada 1/2 período'],['LA','Licença Adotante'],['LC','Licença Compulsória'],['LF','Licença Família'],['LF-1','Licença Família 30 dias c/ vencimento'],['LF-4','Licença Família s/vencimento'],['LG','Licença Gestante'],['LP','Licença Prêmio'],['LPA','Licença Paternidade'],['LS','Licença Saúde'],['LSV','Licença Sem Vencimento'],['N','Nojo'],['NC','Nomeação em comissão'],['RE','Recesso Escolar'],['SO','Falta serviço obrigatório por Lei'],['T.R.E.','Tribunal Regional Eleitoral (trab. votação)'],['FREQ','Frequente'],['ANL','Adicional Noturno'],['DS','Doação de Sangue'],['FOM','Formação']
+]
+const reasonDescription = (code) => MOTIVOS.find(([c])=>c===code)?.[1] || ''
+const monthNames = {'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'}
+const normalizePersonName = (name) => { const particles=new Set(['de','da','do','das','dos','e']); return String(name||'').trim().replace(/\s+/g,' ').split(' ').map((part,i)=>{ const lower=part.toLocaleLowerCase('pt-BR'); if(i>0&&particles.has(lower))return lower; return lower.charAt(0).toLocaleUpperCase('pt-BR')+lower.slice(1) }).join(' ') }
+
+function toast(msg){ const el=$('toast'); el.textContent=msg; el.classList.remove('hidden'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>el.classList.add('hidden'),3200) }
+function setMsg(id,msg,type='error'){ const el=$(id); if(!msg){el.innerHTML='';return} el.innerHTML=`<div class="message ${type}">${esc(msg)}</div>` }
+function setBusy(btn,busy,text){ if(!btn)return; if(busy){btn.dataset.old=btn.textContent;btn.textContent=text||'Aguarde…';btn.disabled=true}else{btn.textContent=btn.dataset.old||btn.textContent;btn.disabled=false} }
+function setConnection(state){ const el=$('connection'); if(!el)return; el.className=`connection ${state}`; el.textContent=state==='online'?'● Sincronizado':state==='offline'?'● Offline':'● Conectando…' }
+
+function showLogin(){ $('loginPage').classList.remove('hidden'); $('activationPage').classList.add('hidden'); $('app').classList.add('hidden') }
+function showActivation(){ $('loginPage').classList.add('hidden'); $('activationPage').classList.remove('hidden'); $('app').classList.add('hidden'); const pending=localStorage.getItem('pending_activation_code'); if(pending)$('activationCode').value=pending }
+function showApp(){ $('loginPage').classList.add('hidden'); $('activationPage').classList.add('hidden'); $('app').classList.remove('hidden'); $('sideUserName').textContent=currentProfile.display_name; $('sideUserRole').textContent=roleLabel(currentProfile.role) }
+
+async function getProfile(){
+  const { data, error } = await db.from('profiles').select('*').eq('id', currentUser.id).maybeSingle()
+  if(error) throw error
+  return data
+}
+async function enterApp(){
+  currentProfile = await getProfile()
+  if(!currentProfile){ showActivation(); return }
+  localStorage.removeItem('pending_activation_code')
+  showApp()
+  await loadAll()
+  subscribeRealtime()
+}
+
+async function login(){
+  setMsg('loginMessage','')
+  const email=$('loginEmail').value.trim(), password=$('loginPass').value
+  if(!email||!password){ setMsg('loginMessage','Preencha e-mail e senha.'); return }
+  setBusy($('loginBtn'),true,'Entrando…')
+  const { data, error } = await db.auth.signInWithPassword({email,password})
+  setBusy($('loginBtn'),false)
+  if(error){ setMsg('loginMessage','Não foi possível entrar. Confira e-mail, senha e se o e-mail já foi confirmado.'); return }
+  currentUser=data.user
+  try{ await enterApp() }catch(e){ setMsg('loginMessage',e.message||'Erro ao carregar o sistema.') }
+}
+
+async function signup(){
+  setMsg('signupMessage','')
+  const email=$('signupEmail').value.trim(), password=$('signupPass').value, code=$('signupCode').value.trim()
+  if(!email||!password||!code){ setMsg('signupMessage','Preencha e-mail, senha e código de ativação.'); return }
+  if(password.length<8){ setMsg('signupMessage','A senha precisa ter pelo menos 8 caracteres.'); return }
+  setBusy($('signupBtn'),true,'Criando…')
+  localStorage.setItem('pending_activation_code',code)
+  const { data, error } = await db.auth.signUp({email,password})
+  setBusy($('signupBtn'),false)
+  if(error){
+    const m=String(error.message||'')
+    if(m.toLowerCase().includes('rate limit')) setMsg('signupMessage','Limite temporário de envio de e-mails atingido. Aguarde um pouco e tente novamente.')
+    else if(m.toLowerCase().includes('already')||m.toLowerCase().includes('registered')) setMsg('signupMessage','Este e-mail já possui uma conta. Use a aba Entrar.')
+    else setMsg('signupMessage',m||'Não foi possível criar o acesso.')
+    return
+  }
+  if(data.session){
+    currentUser=data.user
+    try{ await activateAccess(code); await enterApp() }catch(e){ showActivation(); setMsg('activationMessage',e.message) }
+  }else{
+    setMsg('signupMessage','Conta criada. Confira seu e-mail e confirme o cadastro. Depois volte aqui e faça login. O código de ativação ficou salvo neste navegador.','ok')
+  }
+}
+
+async function activateAccess(code){
+  const { data, error } = await db.rpc('activate_staff_access',{p_code:code})
+  if(error) throw error
+  localStorage.removeItem('pending_activation_code')
+  return data
+}
+async function activateFromPage(){
+  const code=$('activationCode').value.trim(); if(!code){setMsg('activationMessage','Digite o código de ativação.');return}
+  setBusy($('activationBtn'),true,'Ativando…')
+  try{ await activateAccess(code); setMsg('activationMessage','Acesso ativado com sucesso.','ok'); await enterApp() }catch(e){ setMsg('activationMessage',e.message||'Não foi possível ativar o acesso.') }
+  finally{ setBusy($('activationBtn'),false) }
+}
+async function logout(){
+  if(realtimeChannel){ await db.removeChannel(realtimeChannel); realtimeChannel=null }
+  await db.auth.signOut(); currentUser=null; currentProfile=null; teachers=[]; records=[]; profiles=[]; showLogin()
+}
+
+async function loadAll(){
+  const [teachersRes, absencesRes, profilesRes] = await Promise.all([
+    db.from('teachers').select('*').order('name'),
+    db.from('absences').select('*, teacher:teachers!absences_teacher_id_fkey(id,name), substitute:teachers!absences_substitute_teacher_id_fkey(id,name)').order('absence_date',{ascending:false}).order('created_at',{ascending:false}),
+    db.from('profiles').select('*')
+  ])
+  if(teachersRes.error) throw teachersRes.error
+  if(absencesRes.error) throw absencesRes.error
+  if(profilesRes.error) throw profilesRes.error
+  teachers=teachersRes.data||[]; records=absencesRes.data||[]; profiles=profilesRes.data||[]
+  renderAll()
+}
+
+function subscribeRealtime(){
+  if(realtimeChannel) db.removeChannel(realtimeChannel)
+  setConnection('connecting')
+  realtimeChannel=db.channel('school-db-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'teachers'},()=>loadAll().catch(console.error))
+    .on('postgres_changes',{event:'*',schema:'public',table:'absences'},()=>loadAll().catch(console.error))
+    .subscribe((status)=>{ if(status==='SUBSCRIBED')setConnection('online'); else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')setConnection('offline'); else setConnection('connecting') })
+}
+
+</script><script>function statusBadge(r){ return r.substitute_teacher_id?'<span class="badge green">✓ Coberta</span>':'<span class="badge red">● Pendente</span>' }
+function reasonLabel(r){ const code=r.reason_code||''; const desc=r.reason||reasonDescription(code)||''; return [code,desc].filter(Boolean).join(' — ') || '—' }
+function renderMetrics(){
+  $('metricToday').textContent=records.filter(r=>r.absence_date===todayISO()).length
+  $('metricClasses').textContent=records.reduce((a,r)=>a+Number(r.number_of_classes||0),0)
+  $('metricCovered').textContent=records.filter(r=>r.substitute_teacher_id).length
+  $('metricPending').textContent=records.filter(r=>!r.substitute_teacher_id).length
+}
+function pendingCard(r){
+  return `<div class="pending-card"><h4>${esc(recordTeacherName(r))} — ${esc(r.class_name)}</h4><p><strong>${brDate(r.absence_date)}</strong> • ${esc(r.period)} • ${r.number_of_classes} aula(s)</p><p><strong>${esc(r.reason_code||'—')}</strong>${r.reason||reasonDescription(r.reason_code)?' • '+esc(r.reason||reasonDescription(r.reason_code)):''}</p><button class="btn btn-primary" style="padding:8px 11px;font-size:12px;margin-top:8px" data-edit="${r.id}">Definir eventual</button></div>`
+}
+function renderDashboardPending(){ const arr=records.filter(r=>!r.substitute_teacher_id).slice(0,4); $('pendingDashboard').innerHTML=arr.length?arr.map(pendingCard).join(''):'<div class="empty">Nenhuma substituição pendente 🎉</div>' }
+function renderPendingAll(){ const arr=records.filter(r=>!r.substitute_teacher_id); $('pendingAll').innerHTML=arr.length?arr.map(pendingCard).join(''):'<div class="empty">Nenhuma substituição pendente 🎉</div>' }
+function renderRecent(){
+  const arr=records.slice(0,6)
+  $('recentBody').innerHTML=arr.length?arr.map(r=>`<tr><td>${brDate(r.absence_date)}</td><td><strong>${esc(recordTeacherName(r))}</strong></td><td>${esc(r.class_name)}</td><td>${r.number_of_classes}</td><td>${esc(r.period)}</td><td><span class="badge blue">${esc(r.reason_code||'—')}</span></td><td>${esc(r.reason||reasonDescription(r.reason_code)||'—')}</td><td>${esc(recordSubName(r)||'—')}</td><td>${statusBadge(r)}</td><td>${esc(profileName(r.updated_by||r.created_by))}</td></tr>`).join(''):'<tr><td colspan="10" class="empty">Nenhum registro cadastrado.</td></tr>'
+}
+
+function hasActiveFilters(){
+  return ['fTeacher','fMonth','fYear','fDateStart','fDateEnd','fClass','fReason','fStatus'].some(id=>$(id)?.value)
+}
+function filteredRecords(){
+  const t=($('fTeacher')?.value||'').toLowerCase()
+  const mo=$('fMonth')?.value||'', yr=$('fYear')?.value||'', ds=$('fDateStart')?.value||'', de=$('fDateEnd')?.value||''
+  const c=($('fClass')?.value||'').toLowerCase(), rs=$('fReason')?.value||'', st=$('fStatus')?.value||''
+  const order=$('fOrder')?.value||'desc'
+  return records.filter(r=>{
+    if(t&&!recordTeacherName(r).toLowerCase().includes(t))return false
+    if(mo&&r.absence_date.slice(5,7)!==mo)return false
+    if(yr&&r.absence_date.slice(0,4)!==yr)return false
+    if(ds&&r.absence_date<ds)return false
+    if(de&&r.absence_date>de)return false
+    if(c&&!r.class_name.toLowerCase().includes(c))return false
+    if(rs&&r.reason_code!==rs)return false
+    if(st==='covered'&&!r.substitute_teacher_id)return false
+    if(st==='pending'&&r.substitute_teacher_id)return false
+    return true
+  }).sort((a,b)=>{ const byDate=String(a.absence_date).localeCompare(String(b.absence_date)); if(byDate!==0)return order==='asc'?byDate:-byDate; const byCreated=String(a.created_at||'').localeCompare(String(b.created_at||'')); return order==='asc'?byCreated:-byCreated })
+}
+function reportRecords(){ return filteredRecords() }
+function renderFilterOptions(){
+  const year=$('fYear')?.value||''
+  const years=[...new Set(records.map(r=>r.absence_date?.slice(0,4)).filter(Boolean).concat(String(new Date().getFullYear())))].sort((a,b)=>b.localeCompare(a))
+  $('fYear').innerHTML='<option value="">Todos os anos</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join('')
+  if(year&&years.includes(year))$('fYear').value=year
+  const reason=$('fReason')?.value||''
+  $('fReason').innerHTML='<option value="">Todos os motivos</option>'+MOTIVOS.map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join('')
+  if(reason&&MOTIVOS.some(([c])=>c===reason))$('fReason').value=reason
+}
+function filterSummary(){
+  const parts=[]
+  if($('fTeacher').value)parts.push('Professor: '+$('fTeacher').value)
+  if($('fMonth').value)parts.push('Mês: '+monthNames[$('fMonth').value])
+  if($('fYear').value)parts.push('Ano: '+$('fYear').value)
+  if($('fDateStart').value)parts.push('De: '+brDate($('fDateStart').value))
+  if($('fDateEnd').value)parts.push('Até: '+brDate($('fDateEnd').value))
+  if($('fClass').value)parts.push('Classe: '+$('fClass').value)
+  if($('fReason').value)parts.push('Motivo: '+$('fReason').value+' — '+reasonDescription($('fReason').value))
+  if($('fStatus').value)parts.push('Status: '+($('fStatus').value==='covered'?'Coberta':'Pendente'))
+  parts.push('Ordem: '+(($('fOrder')?.value||'desc')==='asc'?'mais antiga primeiro':'mais recente primeiro'))
+  return parts.length?parts.join(' | '):'Nenhum filtro aplicado — todos os registros'
+}
+function clearFilters(){
+  ['fTeacher','fMonth','fYear','fDateStart','fDateEnd','fClass','fReason','fStatus'].forEach(id=>$(id).value='')
+  if($('fOrder'))$('fOrder').value='desc'
+  renderAll()
+}
+function renderRecords(){
+  const arr=filteredRecords(), canDelete=!!currentProfile
+  $('recordsBody').innerHTML=arr.length?arr.map(r=>`<tr><td>${brDate(r.absence_date)}</td><td><strong>${esc(recordTeacherName(r))}</strong></td><td>${esc(r.class_name)}</td><td>${r.number_of_classes}</td><td>${esc(r.period)}</td><td><strong>${esc(r.reason_code||'—')}</strong></td><td>${esc(r.reason||reasonDescription(r.reason_code)||'—')}</td><td>${esc(recordSubName(r)||'—')}</td><td>${statusBadge(r)}</td><td>${esc(profileName(r.updated_by||r.created_by))}</td><td><button class="small-btn" data-edit="${r.id}">Editar</button> ${canDelete?`<button class="small-btn" data-delete="${r.id}">Excluir</button>`:''}</td></tr>`).join(''):'<tr><td colspan="11" class="empty">Nenhum registro encontrado.</td></tr>'
+}
+function renderTeachers(){ const active=teachers.filter(t=>t.active); $('teacherList').innerHTML=active.length?active.map(t=>`<div class="prof-card"><strong>${esc(t.name)}</strong><span>${esc(t.subject||'Sem disciplina')} • ${esc(t.shift||'—')}</span><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="small-btn" data-teacher-edit="${t.id}">Editar</button><button class="small-btn" data-teacher-delete="${t.id}">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum professor cadastrado ainda.</div>' }
+function fillTeacherSelects(){
+  const active=teachers.filter(t=>t.active), a=$('aTeacher'), s=$('aSubstitute'), currentA=a.value, currentS=s.value
+  a.innerHTML=active.length?active.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join(''):'<option value="">Cadastre um professor primeiro</option>'
+  s.innerHTML='<option value="">Ainda não definido</option>'+active.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('')
+  if([...a.options].some(o=>o.value===currentA))a.value=currentA
+  if([...s.options].some(o=>o.value===currentS))s.value=currentS
+}
+function fillReasonSelect(selected=''){
+  if(!$('aReasonCode'))return
+  const current=selected||$('aReasonCode').value||''
+  $('aReasonCode').innerHTML='<option value="">Selecione o motivo</option>'+MOTIVOS.map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join('')
+  if(current&&MOTIVOS.some(([c])=>c===current))$('aReasonCode').value=current
+  $('aReasonDescription').textContent=$('aReasonCode').value?reasonDescription($('aReasonCode').value):'Selecione uma das siglas oficiais da tabela da escola.'
+}
+function renderAll(){ renderFilterOptions();renderMetrics();renderDashboardPending();renderPendingAll();renderRecent();renderRecords();renderTeachers();fillTeacherSelects();fillReasonSelect() }
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); $(id).classList.add('active')
+  document.querySelectorAll('.nav button[data-section]').forEach(b=>b.classList.toggle('active',b.dataset.section===id))
+  const map={dashboard:['Painel','Visão geral das faltas e substituições.'],records:['Faltas / Abonadas','Consulte, filtre, exporte e imprima os registros.'],substitutions:['Substituições','Aulas que ainda precisam de professor eventual.'],teachers:['Professores','Cadastro de professores da escola.']}
+  $('pageTitle').textContent=map[id][0]; $('pageSubtitle').textContent=map[id][1]; $('sidebar').classList.remove('open'); renderAll()
+}
+</script><script>(async()=>{
+function openAbsenceModal(){
+  if(!teachers.some(t=>t.active)){ toast('Cadastre pelo menos um professor antes de registrar uma falta.'); showSection('teachers'); return }
+  $('absenceModalTitle').textContent='Registrar falta / abonada'; $('editId').value=''; $('aDate').value=todayISO(); $('aClass').value=''; $('aClasses').value=1; $('aPeriod').value='Manhã'; fillReasonSelect(''); $('aSubstitute').value=''; $('aNote').value=''; fillTeacherSelects(); $('absenceModal').classList.remove('hidden')
+}
+function closeAbsenceModal(){ $('absenceModal').classList.add('hidden') }
+function editRecord(id){
+  const r=records.find(x=>x.id===id); if(!r)return
+  fillTeacherSelects(); $('absenceModalTitle').textContent='Editar registro'; $('editId').value=r.id; $('aDate').value=r.absence_date; $('aTeacher').value=r.teacher_id; $('aClass').value=r.class_name; $('aClasses').value=r.number_of_classes; $('aPeriod').value=r.period; fillReasonSelect(r.reason_code||''); $('aSubstitute').value=r.substitute_teacher_id||''; $('aNote').value=r.note||''; $('absenceModal').classList.remove('hidden')
+}
+async function saveAbsence(){
+  const id=$('editId').value, absence_date=$('aDate').value, teacher_id=$('aTeacher').value, class_name=$('aClass').value.trim(), number_of_classes=Number($('aClasses').value||0), reason_code=$('aReasonCode').value
+  if(!absence_date||!teacher_id||!class_name||number_of_classes<1||!reason_code){toast('Preencha Data, Professor, Classe, Nº de aulas e Motivo.');return}
+  const payload={absence_date,teacher_id,class_name,number_of_classes,period:$('aPeriod').value,reason_code,reason:reasonDescription(reason_code),substitute_teacher_id:$('aSubstitute').value||null,note:$('aNote').value.trim()||null}
+  setBusy($('saveAbsenceBtn'),true,'Salvando…')
+  let res
+  if(id) res=await db.from('absences').update({...payload,updated_by:currentUser.id}).eq('id',id)
+  else res=await db.from('absences').insert({...payload,created_by:currentUser.id})
+  setBusy($('saveAbsenceBtn'),false)
+  if(res.error){toast('Erro ao salvar: '+res.error.message);return}
+  closeAbsenceModal(); toast(id?'Registro atualizado.':'Registro salvo.'); await loadAll()
+}
+async function deleteRecord(id){ if(!confirm('Excluir este registro? Essa ação não poderá ser desfeita.'))return; const {error}=await db.from('absences').delete().eq('id',id); if(error){toast('Não foi possível excluir: '+error.message);return} toast('Registro excluído.'); await loadAll() }
+
+function openTeacherModal(id=''){
+  const t=id?teachers.find(x=>x.id===id):null
+  $('tEditId').value=t?.id||''; $('teacherModalTitle').textContent=t?'Editar professor':'Cadastrar professor'; $('saveTeacherBtn').textContent=t?'Salvar alterações':'Cadastrar'; $('tName').value=t?.name||''; $('tSubject').value=t?.subject||''; $('tShift').value=t?.shift||'Manhã'; $('teacherModal').classList.remove('hidden')
+}
+function closeTeacherModal(){ $('teacherModal').classList.add('hidden') }
+async function saveTeacher(){
+  const id=$('tEditId').value, name=normalizePersonName($('tName').value); if(!name){toast('Informe o nome do professor.');return}
+  setBusy($('saveTeacherBtn'),true,id?'Salvando…':'Cadastrando…')
+  const payload={name,subject:$('tSubject').value.trim()||null,shift:$('tShift').value}
+  const res=id?await db.from('teachers').update(payload).eq('id',id):await db.from('teachers').insert({...payload,created_by:currentUser.id})
+  setBusy($('saveTeacherBtn'),false); if(res.error){toast('Erro ao salvar professor: '+res.error.message);return}
+  closeTeacherModal();toast(id?'Professor atualizado.':'Professor cadastrado.');await loadAll()
+}
+async function deleteTeacher(id){
+  const t=teachers.find(x=>x.id===id); if(!t)return
+  if(!confirm(`Excluir ${t.name} da lista de professores? O histórico antigo será preservado.`))return
+  const {error}=await db.from('teachers').update({active:false}).eq('id',id)
+  if(error){toast('Não foi possível excluir o professor: '+error.message);return}
+  toast('Professor removido da lista. O histórico foi preservado.');await loadAll()
+}
+
+function openPasswordModal(){ $('currentPassword').value='';$('newPassword').value='';$('confirmPassword').value='';setMsg('passwordMessage','');$('passwordModal').classList.remove('hidden') }
+function closePasswordModal(){ $('passwordModal').classList.add('hidden'); setMsg('passwordMessage','') }
+async function changePassword(){
+  const current=$('currentPassword').value, next=$('newPassword').value, confirmNext=$('confirmPassword').value
+  setMsg('passwordMessage','')
+  if(!current||!next||!confirmNext){setMsg('passwordMessage','Preencha os três campos.');return}
+  if(next.length<8){setMsg('passwordMessage','A nova senha precisa ter pelo menos 8 caracteres.');return}
+  if(next!==confirmNext){setMsg('passwordMessage','A confirmação não é igual à nova senha.');return}
+  if(current===next){setMsg('passwordMessage','Escolha uma senha diferente da atual.');return}
+  setBusy($('savePasswordBtn'),true,'Alterando…')
+  const auth=await db.auth.signInWithPassword({email:currentUser.email,password:current})
+  if(auth.error){setBusy($('savePasswordBtn'),false);setMsg('passwordMessage','A senha atual está incorreta.');return}
+  currentUser=auth.data.user
+  const {error}=await db.auth.updateUser({password:next})
+  setBusy($('savePasswordBtn'),false)
+  if(error){setMsg('passwordMessage','Não foi possível alterar a senha: '+error.message);return}
+  setMsg('passwordMessage','Senha alterada com sucesso.','ok'); toast('Senha alterada com sucesso.'); setTimeout(closePasswordModal,900)
+}
+
+function csvCell(v){ return '"'+String(v??'').replace(/"/g,'""')+'"' }
+function exportCSV(){
+  const arr=filteredRecords()
+  const header=['Data','Professor','Classe','Número de aulas','Período','Sigla','Motivo','Professor eventual','Status','Observação','Registrado por','Última alteração por']
+  const lines=[header.map(csvCell).join(';')]
+  arr.forEach(r=>lines.push([brDate(r.absence_date),recordTeacherName(r),r.class_name,r.number_of_classes,r.period,r.reason_code||'',r.reason||reasonDescription(r.reason_code)||'',recordSubName(r)||'',r.substitute_teacher_id?'Coberta':'Pendente',r.note||'',profileName(r.created_by),profileName(r.updated_by||r.created_by)].map(csvCell).join(';')))
+  const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/csv;charset=utf-8;'})
+  const url=URL.createObjectURL(blob), a=document.createElement('a'), suffix=hasActiveFilters()?'filtrado':'completo'
+  a.href=url;a.download=`controle_faltas_${suffix}_${todayISO()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)
+  toast(`${arr.length} registro(s) exportado(s).`)
+}
+function printReport(){
+  const arr=filteredRecords(), totalAulas=arr.reduce((a,r)=>a+Number(r.number_of_classes||0),0), pend=arr.filter(r=>!r.substitute_teacher_id).length
+  const rows=arr.map(r=>`<tr><td>${brDate(r.absence_date)}</td><td>${esc(recordTeacherName(r))}</td><td>${esc(r.class_name)}</td><td>${r.number_of_classes}</td><td>${esc(r.period)}</td><td>${esc(r.reason_code||'—')}</td><td>${esc(r.reason||reasonDescription(r.reason_code)||'—')}</td><td>${esc(recordSubName(r)||'—')}</td><td>${r.substitute_teacher_id?'Coberta':'Pendente'}</td></tr>`).join('')
+  const w=window.open('','_blank','width=1100,height=800')
+  if(!w){toast('O navegador bloqueou a janela de impressão. Permita pop-ups para este site.');return}
+  w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório de Faltas</title><style>body{font-family:Arial,sans-serif;color:#111827;margin:28px}h1{font-size:22px;margin:0 0 5px}.sub{color:#64748b;font-size:12px;margin-bottom:18px}.filters{font-size:12px;background:#f8fafc;border:1px solid #cbd5e1;padding:10px;margin:12px 0 16px}.summary{display:flex;gap:28px;font-size:13px;margin-bottom:14px}table{width:100%;border-collapse:collapse;font-size:10px}th,td{border:1px solid #cbd5e1;padding:6px;text-align:left;vertical-align:top}th{background:#f1f5f9}.footer{margin-top:14px;font-size:10px;color:#64748b}@page{size:landscape;margin:12mm}@media print{body{margin:0}}</style></head><body><h1>Relatório de Faltas / Abonadas</h1><div class="sub">Controle Escolar • Emitido em ${new Date().toLocaleString('pt-BR')}</div><div class="filters"><strong>Filtros utilizados:</strong> ${esc(filterSummary())}</div><div class="summary"><div><strong>Registros:</strong> ${arr.length}</div><div><strong>Aulas afetadas:</strong> ${totalAulas}</div><div><strong>Pendentes:</strong> ${pend}</div></div><table><thead><tr><th>Data</th><th>Professor</th><th>Classe</th><th>Aulas</th><th>Período</th><th>Sigla</th><th>Motivo</th><th>Eventual</th><th>Status</th></tr></thead><tbody>${rows||'<tr><td colspan="9">Nenhum registro encontrado para os filtros selecionados.</td></tr>'}</tbody></table><div class="footer">Relatório gerado pelo sistema Controle de Faltas.</div><script>window.onload=()=>{window.print()}<\/script></body></html>`)
+  w.document.close()
+}
+
+$('tabLogin').addEventListener('click',()=>{$('tabLogin').classList.add('active');$('tabSignup').classList.remove('active');$('loginForm').classList.remove('hidden');$('signupForm').classList.add('hidden')})
+$('tabSignup').addEventListener('click',()=>{$('tabSignup').classList.add('active');$('tabLogin').classList.remove('active');$('signupForm').classList.remove('hidden');$('loginForm').classList.add('hidden')})
+$('loginBtn').addEventListener('click',login); $('signupBtn').addEventListener('click',signup); $('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')login()}); $('activationBtn').addEventListener('click',activateFromPage); $('activationLogout').addEventListener('click',logout); $('logoutBtn').addEventListener('click',logout)
+$('newAbsenceBtn').addEventListener('click',openAbsenceModal); $('navNewAbsence').addEventListener('click',openAbsenceModal); $('closeAbsence').addEventListener('click',closeAbsenceModal); $('cancelAbsence').addEventListener('click',closeAbsenceModal); $('saveAbsenceBtn').addEventListener('click',saveAbsence)
+$('newTeacherBtn').addEventListener('click',()=>openTeacherModal()); $('closeTeacher').addEventListener('click',closeTeacherModal); $('cancelTeacher').addEventListener('click',closeTeacherModal); $('saveTeacherBtn').addEventListener('click',saveTeacher)
+$('changePasswordBtn').addEventListener('click',openPasswordModal); $('closePassword').addEventListener('click',closePasswordModal); $('cancelPassword').addEventListener('click',closePasswordModal); $('savePasswordBtn').addEventListener('click',changePassword)
+$('exportFilteredBtn').addEventListener('click',exportCSV); $('printFilteredBtn').addEventListener('click',printReport); $('clearFiltersBtn').addEventListener('click',clearFilters); $('seeAllPending').addEventListener('click',()=>showSection('substitutions')); $('menuBtn').addEventListener('click',()=>$('sidebar').classList.toggle('open'))
+document.querySelectorAll('.nav button[data-section]').forEach(btn=>btn.addEventListener('click',()=>showSection(btn.dataset.section)))
+;['fTeacher','fMonth','fYear','fDateStart','fDateEnd','fClass','fReason','fStatus','fOrder'].forEach(id=>$(id).addEventListener(['fMonth','fYear','fDateStart','fDateEnd','fReason','fStatus','fOrder'].includes(id)?'change':'input',renderRecords)); $('aReasonCode').addEventListener('change',()=>fillReasonSelect($('aReasonCode').value))
+document.addEventListener('click',(e)=>{ const edit=e.target.closest('[data-edit]'); if(edit)editRecord(edit.dataset.edit); const del=e.target.closest('[data-delete]'); if(del)deleteRecord(del.dataset.delete); const teacherEdit=e.target.closest('[data-teacher-edit]'); if(teacherEdit)openTeacherModal(teacherEdit.dataset.teacherEdit); const teacherDelete=e.target.closest('[data-teacher-delete]'); if(teacherDelete)deleteTeacher(teacherDelete.dataset.teacherDelete) })
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAbsenceModal();closeTeacherModal();closePasswordModal()}})
+
+const { data:{ session } } = await db.auth.getSession()
+if(session){ currentUser=session.user; try{await enterApp()}catch(e){showLogin();setMsg('loginMessage',e.message)} } else showLogin()
+db.auth.onAuthStateChange(async(event,session)=>{ if(event==='SIGNED_OUT'){showLogin();return} if(session && (!currentUser || currentUser.id!==session.user.id)){currentUser=session.user; try{await enterApp()}catch(e){console.error(e)}} })
+
+})().catch(e=>{console.error(e); try{toast('Erro ao iniciar o sistema. Atualize a página.')}catch(_){}})
+</script>
+</body>
+</html>
