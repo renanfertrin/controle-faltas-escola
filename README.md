@@ -30,3 +30,4 @@ Código-fonte do sistema de controle de faltas, abonadas e substituições.
 ## Segurança
 
 A chave presente no HTML é a chave **publishable** do Supabase, própria para uso no navegador. Não coloque neste repositório chaves `service_role`, senhas de usuários ou outros segredos administrativos.
+Projeto conectado à Vercel.
