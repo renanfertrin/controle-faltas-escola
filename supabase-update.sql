@@ -1,7 +1,9 @@
 -- Atualização do Controle de Faltas
 -- 1) adiciona FOM - Formação às siglas aceitas
--- 2) padroniza nomes dos professores
--- 3) garante que futuros cadastros/edições também sejam padronizados no banco
+-- 2) adiciona DISP - Dispensa
+-- 3) permite siglas personalizadas para a opção Outros
+-- 4) padroniza nomes dos professores
+-- 5) garante que futuros cadastros/edições também sejam padronizados no banco
 
 begin;
 
@@ -63,18 +65,20 @@ set name = public.normalize_person_name(name)
 where name is distinct from public.normalize_person_name(name);
 
 -- Atualiza a lista de siglas permitidas no banco.
+-- As siglas oficiais continuam fixas; a opção "Outros" permite uma sigla própria.
 alter table public.absences
-  drop constraint if exists absences_reason_code_check;
+drop constraint if exists absences_reason_code_check;
 
 alter table public.absences
-  add constraint absences_reason_code_check
-  check (
-    reason_code is null
-    or reason_code = any(array[
-      'A','LAT','AM','AM/2','AT','FA','F','G','I','I/2','J','J/2',
-      'LA','LC','LF','LF-1','LF-4','LG','LP','LPA','LS','LSV','N','NC',
-      'RE','SO','T.R.E.','FREQ','ANL','DS','FOM'
-    ]::text[])
-  );
+add constraint absences_reason_code_check
+check (
+  reason_code is null
+  or reason_code = any(array[
+    'A','LAT','AM','AM/2','AT','FA','F','G','I','I/2','J','J/2',
+    'LA','LC','LF','LF-1','LF-4','LG','LP','LPA','LS','LSV','N','NC',
+    'RE','SO','T.R.E.','FREQ','ANL','DS','FOM','DISP'
+  ]::text[])
+  or (reason_code <> '' and reason_code <> 'OUTROS')
+);
 
 commit;
