@@ -77,12 +77,12 @@
 
     <section id="dashboard" class="section active">
       <div class="cards">
-        <div class="card"><div class="metric-label">Faltas hoje</div><div id="metricToday" class="metric-value">0</div><div class="metric-sub">registros no dia atual</div></div>
-        <div class="card"><div class="metric-label">Aulas afetadas</div><div id="metricClasses" class="metric-value">0</div><div class="metric-sub">no total cadastrado</div></div>
-        <div class="card"><div class="metric-label">Com substituto</div><div id="metricCovered" class="metric-value">0</div><div class="metric-sub">registros já cobertos</div></div>
-        <div class="card"><div class="metric-label">Pendentes</div><div id="metricPending" class="metric-value">0</div><div class="metric-sub">aguardando eventual</div></div>
+        <div class="card"><div class="metric-label">Faltas hoje</div><div class="metric-value" id="metricToday">0</div><div class="metric-sub">Registros na data atual</div></div>
+        <div class="card"><div class="metric-label">Aulas afetadas</div><div class="metric-value" id="metricClasses">0</div><div class="metric-sub">Total de aulas registradas</div></div>
+        <div class="card"><div class="metric-label">Cobertas</div><div class="metric-value" id="metricCovered">0</div><div class="metric-sub">Com professor eventual</div></div>
+        <div class="card"><div class="metric-label">Pendentes</div><div class="metric-value" id="metricPending">0</div><div class="metric-sub">Aguardando eventual</div></div>
       </div>
-      <div class="panel"><div class="panel-head"><h3>🔴 Substituições pendentes</h3><button id="seeAllPending" class="small-btn">Ver todas</button></div><div id="pendingDashboard" class="pending-grid"></div></div>
+      <div class="panel"><div class="panel-head"><h3>Substituições pendentes</h3><button id="seeAllPending" class="small-btn">Ver todas</button></div><div id="pendingDashboard" class="pending-grid"></div></div>
       <div class="panel"><div class="panel-head"><h3>Últimos registros</h3></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Professor</th><th>Classe</th><th>Aulas</th><th>Período</th><th>Sigla</th><th>Motivo</th><th>Eventual</th><th>Status</th><th>Alterado por</th></tr></thead><tbody id="recentBody"></tbody></table></div></div>
     </section>
 
@@ -98,7 +98,7 @@
           <div><label>Classe</label><input id="fClass" placeholder="Ex.: 8º A"></div>
           <div><label>Motivo / Sigla</label><select id="fReason"><option value="">Todos os motivos</option></select></div>
           <div><label>Status</label><select id="fStatus"><option value="">Todos</option><option value="covered">Coberta</option><option value="pending">Pendente</option></select></div>
-          <div><label>Ordem</label><select id="fOrder"><option value="desc">Data: mais recente primeiro</option><option value="asc">Data: mais antiga primeiro</option></select></div>
+          <div><label>Ordem</label><select id="fOrder"><option value="date_desc">Data: mais recente primeiro</option><option value="date_asc">Data: mais antiga primeiro</option><option value="name_asc">Professor: A → Z</option><option value="name_desc">Professor: Z → A</option></select></div>
         </div>
         <div class="table-wrap"><table><thead><tr><th>Data</th><th>Professor</th><th>Classe</th><th>Aulas</th><th>Período</th><th>Sigla</th><th>Motivo</th><th>Eventual</th><th>Status</th><th>Alterado por</th><th>Ações</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
       </div>
@@ -110,11 +110,11 @@
   </main>
 </div>
 
-<div id="absenceModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h3 id="absenceModalTitle">Registrar falta / abonada</h3><button id="closeAbsence" class="close-x">✕</button></div><div class="modal-body"><input id="editId" type="hidden"><div class="form-grid"><div><label>Data *</label><input id="aDate" type="date"></div><div><label>Professor *</label><select id="aTeacher"></select></div><div><label>Classe *</label><input id="aClass" placeholder="Ex.: 8º A"></div><div><label>Nº de aulas *</label><input id="aClasses" type="number" min="1" value="1"></div><div><label>Período *</label><select id="aPeriod"><option>Manhã</option><option>Tarde</option><option>Noite</option></select></div><div><label>Motivo / Sigla *</label><select id="aReasonCode"></select><div id="aReasonDescription" class="reason-help"></div></div><div><label>Professor eventual</label><select id="aSubstitute"><option value="">Ainda não definido</option></select></div><div><label>Observação</label><input id="aNote" placeholder="Opcional"></div></div></div><div class="modal-foot"><button id="cancelAbsence" class="btn btn-light">Cancelar</button><button id="saveAbsenceBtn" class="btn btn-primary">Salvar registro</button></div></div></div>
+<div id="absenceModal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h3 id="absenceModalTitle">Registrar falta / abonada</h3><button id="closeAbsence" class="close-x">✕</button></div><div class="modal-body"><input id="editId" type="hidden"><div class="form-grid"><div><label>Data *</label><input id="aDate" type="date"></div><div><label>Professor *</label><select id="aTeacher"></select></div><div><label>Classe *</label><input id="aClass" placeholder="Ex.: 8º A"></div><div><label>Nº de aulas *</label><input id="aClasses" type="number" min="1" value="1"></div><div><label>Período *</label><select id="aPeriod"><option>Manhã</option><option>Tarde</option><option>Noite</option></select></div><div><label>Motivo / Sigla *</label><select id="aReasonCode"></select><div id="aReasonDescription" class="reason-help"></div></div><div id="customReasonCodeWrap" class="hidden"><label>Sigla do outro motivo *</label><input id="aOtherReasonCode" maxlength="20" placeholder="Ex.: REU"><div class="reason-help">Digite a sigla usada pela escola.</div></div><div id="customReasonTextWrap" class="hidden"><label>Descrição do outro motivo *</label><input id="aOtherReason" placeholder="Digite qual é o outro motivo"><div class="reason-help">Essa descrição ficará registrada junto com a sigla.</div></div><div><label>Professor eventual</label><select id="aSubstitute"><option value="">Ainda não definido</option></select></div><div><label>Observação</label><input id="aNote" placeholder="Opcional"></div></div></div><div class="modal-foot"><button id="cancelAbsence" class="btn btn-light">Cancelar</button><button id="saveAbsenceBtn" class="btn btn-primary">Salvar registro</button></div></div></div>
 
 <div id="teacherModal" class="modal hidden"><div class="modal-card" style="width:min(520px,100%)"><div class="modal-head"><h3 id="teacherModalTitle">Cadastrar professor</h3><button id="closeTeacher" class="close-x">✕</button></div><div class="modal-body"><input id="tEditId" type="hidden"><label>Nome *</label><input id="tName" placeholder="Nome completo"><label>Disciplina</label><input id="tSubject" placeholder="Ex.: Matemática"><label>Turno</label><select id="tShift"><option>Manhã</option><option>Tarde</option><option>Noite</option><option>Integral</option></select></div><div class="modal-foot"><button id="cancelTeacher" class="btn btn-light">Cancelar</button><button id="saveTeacherBtn" class="btn btn-primary">Cadastrar</button></div></div></div>
 
-<div id="passwordModal" class="modal hidden"><div class="modal-card" style="width:min(520px,100%)"><div class="modal-head"><h3>Alterar senha</h3><button id="closePassword" class="close-x">✕</button></div><div class="modal-body"><div class="notice">A alteração vale para este login em todos os computadores e celulares.</div><label>Senha atual *</label><input id="currentPassword" type="password" autocomplete="current-password"><label>Nova senha *</label><input id="newPassword" type="password" minlength="8" placeholder="Mínimo de 8 caracteres" autocomplete="new-password"><label>Confirmar nova senha *</label><input id="confirmPassword" type="password" minlength="8" autocomplete="new-password"><div id="passwordMessage"></div></div><div class="modal-foot"><button id="cancelPassword" class="btn btn-light">Cancelar</button><button id="savePasswordBtn" class="btn btn-primary">Alterar senha</button></div></div></div>
+<div id="passwordModal" class="modal hidden"><div class="modal-card" style="width:min(520px,100%)"><div class="modal-head"><h3>Alterar senha</h3><button id="closePassword" class="close-x">✕</button></div><div class="modal-body"><div class="notice">A alteração vale para este login em todos os computadores e celulares.</div><label>Senha atual *</label><input id="currentPassword" type="password" autocomplete="current-password"><label>Nova senha *</label><input id="newPassword" type="password" minlength="8" placeholder="Mínimo de 8 caracteres" autocomplete="new-password"><label>Confirmar nova senha *</label><input id="confirmPassword" type="password" minlength="8" placeholder="Mínimo de 8 caracteres" autocomplete="new-password"><div id="passwordMessage"></div></div><div class="modal-foot"><button id="cancelPassword" class="btn btn-light">Cancelar</button><button id="savePasswordBtn" class="btn btn-primary">Alterar senha</button></div></div></div>
 <div id="toast" class="toast hidden"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>const SUPABASE_URL = 'https://kpfpiyqozkesphslwqwz.supabase.co'
@@ -137,9 +137,9 @@ const profileName = (id) => profiles.find(p=>p.id===id)?.display_name || '—'
 const recordTeacherName = (r) => r.teacher?.name || teachers.find(t=>t.id===r.teacher_id)?.name || '—'
 const recordSubName = (r) => r.substitute?.name || teachers.find(t=>t.id===r.substitute_teacher_id)?.name || ''
 const MOTIVOS = [
-  ['A','Abonada'],['LAT','Licença Acidente de Trabalho'],['AM','Atestado Médico'],['AM/2','Atestado Médico meio período'],['AT','Atrasos'],['FA','Falta Aula'],['F','Férias'],['G','Gala'],['I','Falta Injustificada'],['I/2','Falta Injustificada 1/2 período'],['J','Falta Justificada'],['J/2','Falta Justificada 1/2 período'],['LA','Licença Adotante'],['LC','Licença Compulsória'],['LF','Licença Família'],['LF-1','Licença Família 30 dias c/ vencimento'],['LF-4','Licença Família s/vencimento'],['LG','Licença Gestante'],['LP','Licença Prêmio'],['LPA','Licença Paternidade'],['LS','Licença Saúde'],['LSV','Licença Sem Vencimento'],['N','Nojo'],['NC','Nomeação em comissão'],['RE','Recesso Escolar'],['SO','Falta serviço obrigatório por Lei'],['T.R.E.','Tribunal Regional Eleitoral (trab. votação)'],['FREQ','Frequente'],['ANL','Adicional Noturno'],['DS','Doação de Sangue'],['FOM','Formação']
+  ['A','Abonada'],['LAT','Licença Acidente de Trabalho'],['AM','Atestado Médico'],['AM/2','Atestado Médico meio período'],['AT','Atrasos'],['FA','Falta Aula'],['F','Férias'],['G','Gala'],['I','Falta Injustificada'],['I/2','Falta Injustificada 1/2 período'],['J','Falta Justificada'],['J/2','Falta Justificada 1/2 período'],['LA','Licença Adotante'],['LC','Licença Compulsória'],['LF','Licença Família'],['LF-1','Licença Família 30 dias c/ vencimento'],['LF-4','Licença Família s/vencimento'],['LG','Licença Gestante'],['LP','Licença Prêmio'],['LPA','Licença Paternidade'],['LS','Licença Saúde'],['LSV','Licença Sem Vencimento'],['N','Nojo'],['NC','Nomeação em comissão'],['RE','Recesso Escolar'],['SO','Falta serviço obrigatório por Lei'],['T.R.E.','Tribunal Regional Eleitoral (trab. votação)'],['FREQ','Frequente'],['ANL','Adicional Noturno'],['DS','Doação de Sangue'],['FOM','Formação'],['DISP','Dispensa'],['OUTROS','Outros']
 ]
-const reasonDescription = (code) => MOTIVOS.find(([c])=>c===code)?.[1] || ''
+const reasonDescription = (code) => MOTIVOS.find(([c])=>c===code)?.[1] || (records.find(r=>r.reason_code===code)?.reason || '')
 const monthNames = {'01':'Janeiro','02':'Fevereiro','03':'Março','04':'Abril','05':'Maio','06':'Junho','07':'Julho','08':'Agosto','09':'Setembro','10':'Outubro','11':'Novembro','12':'Dezembro'}
 const normalizePersonName = (name) => { const particles=new Set(['de','da','do','das','dos','e']); return String(name||'').trim().replace(/\s+/g,' ').split(' ').map((part,i)=>{ const lower=part.toLocaleLowerCase('pt-BR'); if(i>0&&particles.has(lower))return lower; return lower.charAt(0).toLocaleUpperCase('pt-BR')+lower.slice(1) }).join(' ') }
 
@@ -190,7 +190,7 @@ async function signup(){
   if(error){
     const m=String(error.message||'')
     if(m.toLowerCase().includes('rate limit')) setMsg('signupMessage','Limite temporário de envio de e-mails atingido. Aguarde um pouco e tente novamente.')
-    else if(m.toLowerCase().includes('already')||m.toLowerCase().includes('registered')) setMsg('signupMessage','Este e-mail já possui uma conta. Use a aba Entrar.')
+    else if(m.toLowerCase().includes('already')||m.toLowerCase().includes('registered')||m.toLowerCase().includes('duplicate')) setMsg('signupMessage','Este e-mail já possui uma conta. Use a aba Entrar.')
     else setMsg('signupMessage',m||'Não foi possível criar o acesso.')
     return
   }
@@ -241,7 +241,7 @@ function subscribeRealtime(){
     .subscribe((status)=>{ if(status==='SUBSCRIBED')setConnection('online'); else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')setConnection('offline'); else setConnection('connecting') })
 }
 
-</script><script>function statusBadge(r){ return r.substitute_teacher_id?'<span class="badge green">✓ Coberta</span>':'<span class="badge red">● Pendente</span>' }
+function statusBadge(r){ return r.substitute_teacher_id?'<span class="badge green">✓ Coberta</span>':'<span class="badge red">● Pendente</span>' }
 function reasonLabel(r){ const code=r.reason_code||''; const desc=r.reason||reasonDescription(code)||''; return [code,desc].filter(Boolean).join(' — ') || '—' }
 function renderMetrics(){
   $('metricToday').textContent=records.filter(r=>r.absence_date===todayISO()).length
@@ -266,7 +266,7 @@ function filteredRecords(){
   const t=($('fTeacher')?.value||'').toLowerCase()
   const mo=$('fMonth')?.value||'', yr=$('fYear')?.value||'', ds=$('fDateStart')?.value||'', de=$('fDateEnd')?.value||''
   const c=($('fClass')?.value||'').toLowerCase(), rs=$('fReason')?.value||'', st=$('fStatus')?.value||''
-  const order=$('fOrder')?.value||'desc'
+  const order=$('fOrder')?.value||'date_desc'
   return records.filter(r=>{
     if(t&&!recordTeacherName(r).toLowerCase().includes(t))return false
     if(mo&&r.absence_date.slice(5,7)!==mo)return false
@@ -278,7 +278,19 @@ function filteredRecords(){
     if(st==='covered'&&!r.substitute_teacher_id)return false
     if(st==='pending'&&r.substitute_teacher_id)return false
     return true
-  }).sort((a,b)=>{ const byDate=String(a.absence_date).localeCompare(String(b.absence_date)); if(byDate!==0)return order==='asc'?byDate:-byDate; const byCreated=String(a.created_at||'').localeCompare(String(b.created_at||'')); return order==='asc'?byCreated:-byCreated })
+  }).sort((a,b)=>{
+    if(order==='name_asc'||order==='name_desc'){
+      const byName=recordTeacherName(a).localeCompare(recordTeacherName(b),'pt-BR',{sensitivity:'base'});
+      if(byName!==0)return order==='name_asc'?byName:-byName;
+      const byDate=String(a.absence_date).localeCompare(String(b.absence_date));
+      if(byDate!==0)return -byDate;
+    }else{
+      const byDate=String(a.absence_date).localeCompare(String(b.absence_date));
+      if(byDate!==0)return order==='date_asc'?byDate:-byDate;
+    }
+    const byCreated=String(a.created_at||'').localeCompare(String(b.created_at||''));
+    return (order==='date_asc'||order==='name_asc')?byCreated:-byCreated;
+  })
 }
 function reportRecords(){ return filteredRecords() }
 function renderFilterOptions(){
@@ -287,8 +299,10 @@ function renderFilterOptions(){
   $('fYear').innerHTML='<option value="">Todos os anos</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join('')
   if(year&&years.includes(year))$('fYear').value=year
   const reason=$('fReason')?.value||''
-  $('fReason').innerHTML='<option value="">Todos os motivos</option>'+MOTIVOS.map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join('')
-  if(reason&&MOTIVOS.some(([c])=>c===reason))$('fReason').value=reason
+  const fixed=MOTIVOS.filter(([c])=>c!=='OUTROS')
+  const custom=[...new Map(records.filter(r=>r.reason_code&&!MOTIVOS.some(([c])=>c===r.reason_code)).map(r=>[r.reason_code,r.reason||'Outros'])).entries()]
+  $('fReason').innerHTML='<option value="">Todos os motivos</option>'+fixed.map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join('')+(custom.length?'<option disabled>──────── Outros cadastrados ────────</option>'+custom.sort((a,b)=>a[0].localeCompare(b[0],'pt-BR')).map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join(''):'')
+  if(reason&&([...fixed.map(([c])=>c),...custom.map(([c])=>c)].includes(reason)))$('fReason').value=reason
 }
 function filterSummary(){
   const parts=[]
@@ -300,12 +314,13 @@ function filterSummary(){
   if($('fClass').value)parts.push('Classe: '+$('fClass').value)
   if($('fReason').value)parts.push('Motivo: '+$('fReason').value+' — '+reasonDescription($('fReason').value))
   if($('fStatus').value)parts.push('Status: '+($('fStatus').value==='covered'?'Coberta':'Pendente'))
-  parts.push('Ordem: '+(($('fOrder')?.value||'desc')==='asc'?'mais antiga primeiro':'mais recente primeiro'))
+  const order=$('fOrder')?.value||'date_desc'
+  parts.push('Ordem: '+({date_desc:'data mais recente primeiro',date_asc:'data mais antiga primeiro',name_asc:'professor A → Z',name_desc:'professor Z → A'}[order]||'data mais recente primeiro'))
   return parts.length?parts.join(' | '):'Nenhum filtro aplicado — todos os registros'
 }
 function clearFilters(){
   ['fTeacher','fMonth','fYear','fDateStart','fDateEnd','fClass','fReason','fStatus'].forEach(id=>$(id).value='')
-  if($('fOrder'))$('fOrder').value='desc'
+  if($('fOrder'))$('fOrder').value='date_desc'
   renderAll()
 }
 function renderRecords(){
@@ -325,7 +340,15 @@ function fillReasonSelect(selected=''){
   const current=selected||$('aReasonCode').value||''
   $('aReasonCode').innerHTML='<option value="">Selecione o motivo</option>'+MOTIVOS.map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join('')
   if(current&&MOTIVOS.some(([c])=>c===current))$('aReasonCode').value=current
-  $('aReasonDescription').textContent=$('aReasonCode').value?reasonDescription($('aReasonCode').value):'Selecione uma das siglas oficiais da tabela da escola.'
+  updateReasonFields()
+}
+function updateReasonFields(){
+  const isOther=$('aReasonCode')?.value==='OUTROS'
+  $('customReasonCodeWrap')?.classList.toggle('hidden',!isOther)
+  $('customReasonTextWrap')?.classList.toggle('hidden',!isOther)
+  if(isOther){ $('aReasonDescription').textContent='Informe a descrição e a sigla do outro motivo.' }
+  else if($('aReasonCode')?.value){ $('aReasonDescription').textContent=reasonDescription($('aReasonCode').value) }
+  else { $('aReasonDescription').textContent='Selecione uma das siglas oficiais da tabela da escola.' }
 }
 function renderAll(){ renderFilterOptions();renderMetrics();renderDashboardPending();renderPendingAll();renderRecent();renderRecords();renderTeachers();fillTeacherSelects();fillReasonSelect() }
 function showSection(id){
@@ -334,20 +357,30 @@ function showSection(id){
   const map={dashboard:['Painel','Visão geral das faltas e substituições.'],records:['Faltas / Abonadas','Consulte, filtre, exporte e imprima os registros.'],substitutions:['Substituições','Aulas que ainda precisam de professor eventual.'],teachers:['Professores','Cadastro de professores da escola.']}
   $('pageTitle').textContent=map[id][0]; $('pageSubtitle').textContent=map[id][1]; $('sidebar').classList.remove('open'); renderAll()
 }
-</script><script>(async()=>{
+
 function openAbsenceModal(){
   if(!teachers.some(t=>t.active)){ toast('Cadastre pelo menos um professor antes de registrar uma falta.'); showSection('teachers'); return }
-  $('absenceModalTitle').textContent='Registrar falta / abonada'; $('editId').value=''; $('aDate').value=todayISO(); $('aClass').value=''; $('aClasses').value=1; $('aPeriod').value='Manhã'; fillReasonSelect(''); $('aSubstitute').value=''; $('aNote').value=''; fillTeacherSelects(); $('absenceModal').classList.remove('hidden')
+  $('absenceModalTitle').textContent='Registrar falta / abonada'; $('editId').value=''; $('aDate').value=todayISO(); $('aClass').value=''; $('aClasses').value=1; $('aPeriod').value='Manhã'; fillReasonSelect(''); $('aOtherReasonCode').value=''; $('aOtherReason').value=''; $('aSubstitute').value=''; $('aNote').value=''; fillTeacherSelects(); $('absenceModal').classList.remove('hidden')
 }
 function closeAbsenceModal(){ $('absenceModal').classList.add('hidden') }
 function editRecord(id){
   const r=records.find(x=>x.id===id); if(!r)return
-  fillTeacherSelects(); $('absenceModalTitle').textContent='Editar registro'; $('editId').value=r.id; $('aDate').value=r.absence_date; $('aTeacher').value=r.teacher_id; $('aClass').value=r.class_name; $('aClasses').value=r.number_of_classes; $('aPeriod').value=r.period; fillReasonSelect(r.reason_code||''); $('aSubstitute').value=r.substitute_teacher_id||''; $('aNote').value=r.note||''; $('absenceModal').classList.remove('hidden')
+  fillTeacherSelects(); $('absenceModalTitle').textContent='Editar registro'; $('editId').value=r.id; $('aDate').value=r.absence_date; $('aTeacher').value=r.teacher_id; $('aClass').value=r.class_name; $('aClasses').value=r.number_of_classes; $('aPeriod').value=r.period;
+  const isFixed=MOTIVOS.some(([c])=>c===r.reason_code&&c!=='OUTROS');
+  fillReasonSelect(isFixed?r.reason_code:'OUTROS'); $('aOtherReasonCode').value=isFixed?'':(r.reason_code||''); $('aOtherReason').value=isFixed?'':(r.reason||'');
+  $('aSubstitute').value=r.substitute_teacher_id||''; $('aNote').value=r.note||''; $('absenceModal').classList.remove('hidden')
 }
 async function saveAbsence(){
-  const id=$('editId').value, absence_date=$('aDate').value, teacher_id=$('aTeacher').value, class_name=$('aClass').value.trim(), number_of_classes=Number($('aClasses').value||0), reason_code=$('aReasonCode').value
-  if(!absence_date||!teacher_id||!class_name||number_of_classes<1||!reason_code){toast('Preencha Data, Professor, Classe, Nº de aulas e Motivo.');return}
-  const payload={absence_date,teacher_id,class_name,number_of_classes,period:$('aPeriod').value,reason_code,reason:reasonDescription(reason_code),substitute_teacher_id:$('aSubstitute').value||null,note:$('aNote').value.trim()||null}
+  const id=$('editId').value, absence_date=$('aDate').value, teacher_id=$('aTeacher').value, class_name=$('aClass').value.trim(), number_of_classes=Number($('aClasses').value||0), selectedReason=$('aReasonCode').value
+  if(!absence_date||!teacher_id||!class_name||number_of_classes<1||!selectedReason){toast('Preencha Data, Professor, Classe, Nº de aulas e Motivo.');return}
+  let reason_code=selectedReason, reason=reasonDescription(selectedReason)
+  if(selectedReason==='OUTROS'){
+    reason_code=$('aOtherReasonCode').value.trim().toUpperCase().replace(/\s+/g,'')
+    reason=$('aOtherReason').value.trim()
+    if(!reason_code||!reason){toast('Informe a descrição e a sigla do outro motivo.');return}
+    if(MOTIVOS.some(([c])=>c===reason_code)){toast('Essa sigla já pertence à tabela oficial. Escolha outra sigla.');return}
+  }
+  const payload={absence_date,teacher_id,class_name,number_of_classes,period:$('aPeriod').value,reason_code,reason,substitute_teacher_id:$('aSubstitute').value||null,note:$('aNote').value.trim()||null}
   setBusy($('saveAbsenceBtn'),true,'Salvando…')
   let res
   if(id) res=await db.from('absences').update({...payload,updated_by:currentUser.id}).eq('id',id)
@@ -426,7 +459,7 @@ $('newTeacherBtn').addEventListener('click',()=>openTeacherModal()); $('closeTea
 $('changePasswordBtn').addEventListener('click',openPasswordModal); $('closePassword').addEventListener('click',closePasswordModal); $('cancelPassword').addEventListener('click',closePasswordModal); $('savePasswordBtn').addEventListener('click',changePassword)
 $('exportFilteredBtn').addEventListener('click',exportCSV); $('printFilteredBtn').addEventListener('click',printReport); $('clearFiltersBtn').addEventListener('click',clearFilters); $('seeAllPending').addEventListener('click',()=>showSection('substitutions')); $('menuBtn').addEventListener('click',()=>$('sidebar').classList.toggle('open'))
 document.querySelectorAll('.nav button[data-section]').forEach(btn=>btn.addEventListener('click',()=>showSection(btn.dataset.section)))
-;['fTeacher','fMonth','fYear','fDateStart','fDateEnd','fClass','fReason','fStatus','fOrder'].forEach(id=>$(id).addEventListener(['fMonth','fYear','fDateStart','fDateEnd','fReason','fStatus','fOrder'].includes(id)?'change':'input',renderRecords)); $('aReasonCode').addEventListener('change',()=>fillReasonSelect($('aReasonCode').value))
+;['fTeacher','fMonth','fYear','fDateStart','fDateEnd','fClass','fReason','fStatus','fOrder'].forEach(id=>$(id).addEventListener(['fMonth','fYear','fDateStart','fDateEnd','fReason','fStatus','fOrder'].includes(id)?'change':'input',renderRecords)); $('aReasonCode').addEventListener('change',()=>{ updateReasonFields() })
 document.addEventListener('click',(e)=>{ const edit=e.target.closest('[data-edit]'); if(edit)editRecord(edit.dataset.edit); const del=e.target.closest('[data-delete]'); if(del)deleteRecord(del.dataset.delete); const teacherEdit=e.target.closest('[data-teacher-edit]'); if(teacherEdit)openTeacherModal(teacherEdit.dataset.teacherEdit); const teacherDelete=e.target.closest('[data-teacher-delete]'); if(teacherDelete)deleteTeacher(teacherDelete.dataset.teacherDelete) })
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAbsenceModal();closeTeacherModal();closePasswordModal()}})
 
