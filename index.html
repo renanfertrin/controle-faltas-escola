@@ -128,6 +128,7 @@ let records = []
 let profiles = []
 let realtimeChannel = null
 
+(async()=>{
 const $ = (id) => document.getElementById(id)
 const roleLabel = (r) => ({diretora:'Diretora',vice:'Vice-direção',secretaria:'Secretaria'}[r] || r || '')
 const todayISO = () => { const d=new Date(); const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}` }
@@ -298,12 +299,29 @@ function renderFilterOptions(){
   const years=[...new Set(records.map(r=>r.absence_date?.slice(0,4)).filter(Boolean).concat(String(new Date().getFullYear())))].sort((a,b)=>b.localeCompare(a))
   $('fYear').innerHTML='<option value="">Todos os anos</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join('')
   if(year&&years.includes(year))$('fYear').value=year
+
   const reason=$('fReason')?.value||''
-  const fixed=MOTIVOS.filter(([c])=>c!=='OUTROS')
-  const custom=[...new Map(records.filter(r=>r.reason_code&&!MOTIVOS.some(([c])=>c===r.reason_code)).map(r=>[r.reason_code,r.reason||'Outros'])).entries()]
-  $('fReason').innerHTML='<option value="">Todos os motivos</option>'+fixed.map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join('')+(custom.length?'<option disabled>──────── Outros cadastrados ────────</option>'+custom.sort((a,b)=>a[0].localeCompare(b[0],'pt-BR')).map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join(''):'')
-  if(reason&&([...fixed.map(([c])=>c),...custom.map(([c])=>c)].includes(reason)))$('fReason').value=reason
+  const fixed=MOTIVOS
+    .filter(([c])=>c!=='OUTROS')
+    .sort((a,b)=>a[1].localeCompare(b[1],'pt-BR',{sensitivity:'base'}))
+  const custom=[...new Map(
+    records
+      .filter(r=>r.reason_code&&!MOTIVOS.some(([c])=>c===r.reason_code))
+      .map(r=>[r.reason_code,r.reason||'Outros'])
+  ).entries()]
+    .sort((a,b)=>{
+      const byDesc=String(a[1]).localeCompare(String(b[1]),'pt-BR',{sensitivity:'base'})
+      return byDesc!==0?byDesc:String(a[0]).localeCompare(String(b[0]),'pt-BR',{sensitivity:'base'})
+    })
+
+  $('fReason').innerHTML='<option value="">Todos os motivos</option>'+
+    fixed.map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join('')+
+    (custom.length?'<option disabled>──────── Outros cadastrados ────────</option>'+custom.map(([c,d])=>`<option value="${esc(c)}">${esc(c)} — ${esc(d)}</option>`).join(''):'')
+
+  const validReasonValues=[...fixed.map(([c])=>c),...custom.map(([c])=>c)]
+  if(reason&&validReasonValues.includes(reason))$('fReason').value=reason
 }
+
 function filterSummary(){
   const parts=[]
   if($('fTeacher').value)parts.push('Professor: '+$('fTeacher').value)
@@ -329,7 +347,7 @@ function renderRecords(){
 }
 function renderTeachers(){ const active=teachers.filter(t=>t.active); $('teacherList').innerHTML=active.length?active.map(t=>`<div class="prof-card"><strong>${esc(t.name)}</strong><span>${esc(t.subject||'Sem disciplina')} • ${esc(t.shift||'—')}</span><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="small-btn" data-teacher-edit="${t.id}">Editar</button><button class="small-btn" data-teacher-delete="${t.id}">Excluir</button></div></div>`).join(''):'<div class="empty">Nenhum professor cadastrado ainda.</div>' }
 function fillTeacherSelects(){
-  const active=teachers.filter(t=>t.active), a=$('aTeacher'), s=$('aSubstitute'), currentA=a.value, currentS=s.value
+  const active=teachers.filter(t=>t.active).sort((x,y)=>String(x.name||'').localeCompare(String(y.name||''),'pt-BR',{sensitivity:'base'})), a=$('aTeacher'), s=$('aSubstitute'), currentA=a.value, currentS=s.value
   a.innerHTML=active.length?active.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join(''):'<option value="">Cadastre um professor primeiro</option>'
   s.innerHTML='<option value="">Ainda não definido</option>'+active.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('')
   if([...a.options].some(o=>o.value===currentA))a.value=currentA
